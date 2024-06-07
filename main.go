@@ -25,7 +25,6 @@ import (
 	"github.com/waku-org/go-waku/waku/v2/utils"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"google.golang.org/protobuf/proto"
 )
 
 type Options struct {
@@ -242,6 +241,16 @@ func QueryMessages(ctx context.Context, opts Options) error {
 		}
 	}
 
+	var StartTime *int64
+	if options.StartTime > 0 {
+		StartTime = &options.StartTime
+	}
+
+	var EndTime *int64
+	if options.EndTime > 0 {
+		EndTime = &options.EndTime
+	}
+
 	cnt := 0
 	if !options.UseLegacy {
 		var criteria store.Criteria
@@ -249,8 +258,8 @@ func QueryMessages(ctx context.Context, opts Options) error {
 		if len(hashes) == 0 {
 			criteria = store.FilterCriteria{
 				ContentFilter: protocol.NewContentFilter(options.PubSubTopic, options.ContentTopics.Value()...),
-				TimeStart:     proto.Int64(options.StartTime),
-				TimeEnd:       proto.Int64(options.EndTime),
+				TimeStart:     StartTime,
+				TimeEnd:       EndTime,
 			}
 		} else {
 			criteria = store.MessageHashCriteria{
@@ -313,8 +322,8 @@ func QueryMessages(ctx context.Context, opts Options) error {
 		query := legacy_store.Query{
 			PubsubTopic:   options.PubSubTopic,
 			ContentTopics: options.ContentTopics.Value(),
-			StartTime:     proto.Int64(options.StartTime),
-			EndTime:       proto.Int64(options.EndTime),
+			StartTime:     StartTime,
+			EndTime:       EndTime,
 		}
 
 		ctx, cancel := context.WithTimeout(context.Background(), options.QueryTimeout)

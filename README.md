@@ -83,7 +83,10 @@ MessageHash                                                         Content Topi
 
 To see the content of a message
 ```
- ./build/query --cluster-id=16 --storenode=/dns4/store-01.do-ams3.shards.test.status.im/tcp/30303/p2p/16Uiu2HAmAUdrQ3uwzuE4Gy4D56hX6uLKEeerJAnhKEHZ3DxF1EfT --hash 0xacb469e0464aa6ebe7847807bf856c05a7ed3d26c5813f76c206ff9706eb686b
+ ./build/query \
+   --cluster-id=16 \
+   --storenode=/dns4/store-01.do-ams3.shards.test.status.im/tcp/30303/p2p/16Uiu2HAmAUdrQ3uwzuE4Gy4D56hX6uLKEeerJAnhKEHZ3DxF1EfT \
+   --hash 0xacb469e0464aa6ebe7847807bf856c05a7ed3d26c5813f76c206ff9706eb686b
 
 PubsubTopic: 0xc000350830
 MessageHash: 0xacb469e0464aa6ebe7847807bf856c05a7ed3d26c5813f76c206ff9706eb686b
@@ -105,17 +108,16 @@ Payload:
 000000a0  b0 47 79 2b 28 50 06 7d  89 69 d8 85 8e 3c 7f cb  |.Gy+(P.}.i...<..|
 
 Meta: <nil>
-Meta: <nil>
 RateLimitProof: <nil>
 ```
 
 ### Docker
 ```
 # Build
-docker build -t querytool:latest .
+docker build -t storequery:latest .
 
 # Execute
-docker run querytool:latest \
+docker run storequery:latest \
   --cluster-id=16 \
   --storenode=/dns4/store-01.do-ams3.shards.test.status.im/tcp/30303/p2p/16Uiu2HAmAUdrQ3uwzuE4Gy4D56hX6uLKEeerJAnhKEHZ3DxF1EfT \
   --pubsub-topic=/waku/2/rs/16/32 \

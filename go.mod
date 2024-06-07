@@ -9,7 +9,6 @@ require (
 	github.com/libp2p/go-libp2p v0.35.0
 	github.com/multiformats/go-multiaddr v0.12.4
 	github.com/rodaine/table v1.2.0
-	github.com/stretchr/testify v1.9.0
 	github.com/urfave/cli/v2 v2.27.2
 	github.com/waku-org/go-waku v0.8.1-0.20240605190333-d2d2f5672ebd
 	go.uber.org/zap v1.27.0
@@ -119,6 +118,7 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/shirou/gopsutil v3.21.4-0.20210419000835-c7a38de76ee5+incompatible // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
+	github.com/stretchr/testify v1.9.0 // indirect
 	github.com/syndtr/goleveldb v1.0.1-0.20220614013038-64ee5596c38a // indirect
 	github.com/tklauser/go-sysconf v0.3.5 // indirect
 	github.com/tklauser/numcpus v0.2.2 // indirect
