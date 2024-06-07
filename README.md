@@ -23,18 +23,18 @@ To retrieve data using StoreV2
 
 
 Page: 1, Record from 1 to 20
-MessageHash                                                         Content Topic             Timestamp (unix nano)  Timestamp (UTC)                       
-0xacb469e0464aa6ebe7847807bf856c05a7ed3d26c5813f76c206ff9706eb686b  /waku/1/0xd811cd50/rfc26  1717586544149237000    2024-06-05 07:22:24.149237 -0400 AST  
-0x518dd28a733ce491cedf698e4ed375e362fd435603f7d8807dc341303e838f3f  /waku/1/0x242ed557/rfc26  1717586545164878000    2024-06-05 07:22:25.164878 -0400 AST  
+MessageHash                                                         Content Topic             Timestamp                              Unix Nanoseconds  
+0x5142e23971e369c61c1fce403e28728e1e2bf950ea4988032aeab527f785a7bf  /waku/2/rs/16/32  /waku/1/0xd811cd50/rfc26  1717587985332236000  2024-06-05 11:46:25.332236 +0000 UTC
+0x1f09e1534ff19ab2c3f4e9cc751d621ce66f86df2b6eb8efa2712edfa0162fde  /waku/2/rs/16/32  /waku/1/0x242ed557/rfc26  1717588588587729000  2024-06-05 11:56:28.587729 +0000 UTC     
 ...
 ...
 
 Cursor: Digest(f4e9ceb8cb71b5f59e788858c1133d6853fbcf11094d80da53db235843351509); ReceiverTime:1717586544149237000, SenderTime: 1717586544149237000, PubsubTopic: /waku/2/rs/16/32
 
 Page: 2, Record from 21 to 30
-MessageHash                                                         Content Topic             Timestamp (unix nano)  Timestamp (UTC)                       
-0x2398b5e4e76e756c45d44e4bc80e419ed30442c6ae4a5f821e76a16c5046f7c0  /waku/1/0xa0a6b41b/rfc26  1717508510925960000    2024-06-04 09:41:50.92596 -0400 AST   
-0x81eb1068e582095d440d145b64b1f96e66a5b928626fa8a87f258f80b09b8034  /waku/1/0xa0a6b41b/rfc26  1717575288097033000    2024-06-05 04:14:48.097033 -0400 AST  
+MessageHash                                                         Content Topic             Timestamp                              Unix Nanoseconds  
+0x2dfc7a3bcfe70590b62c18f551db94a810561a14890d950adcb62f3a1b62868d  /waku/2/rs/16/32  /waku/1/0x242ed557/rfc26  1717588617605728000  2024-06-05 11:56:57.605728 +0000 UTC     
+0x688bc1fcf806baa978fe6f59483b8acdcb1b7a19f920c98002d422b44fd6301f  /waku/2/rs/16/32  /waku/1/0x242ed557/rfc26  1717588680307133000  2024-06-05 11:58:00.307133 +0000 UTC
 ...
 ...
 ```
@@ -56,9 +56,9 @@ To retrieve data using StoreV3
   --pagesize=20
 
 Page: 1, Record from 1 to 20
-MessageHash                                                         Content Topic             Timestamp (unix nano)  Timestamp (UTC)                       
-0xacb469e0464aa6ebe7847807bf856c05a7ed3d26c5813f76c206ff9706eb686b  /waku/1/0xd811cd50/rfc26  0xc000c340f0           2024-06-05 07:22:24.149237 -0400 AST  
-0x518dd28a733ce491cedf698e4ed375e362fd435603f7d8807dc341303e838f3f  /waku/1/0x242ed557/rfc26  0xc000c34110           2024-06-05 07:22:25.164878 -0400 AST  
+MessageHash                                                         Content Topic             Timestamp                                                     
+0xf9becf36390b0790f4556829bab9fe177494fc3fd9309ceb6bc0e7d869e96485  /waku/1/0x242ed557/rfc26  1717710661383564000  2024-06-06 21:51:01.383564 +0000 UTC     
+0x5b555b7986f6f76dfc199934b159327ed7535232012c0849bcc67ec1d2dacedf  /waku/1/0x242ed557/rfc26  1717710663235488000  2024-06-06 21:51:03.235488 +0000 UTC  
 ...
 ...
 
@@ -67,17 +67,15 @@ Cursor: acb469e0464aa6ebe7847807bf856c05a7ed3d26c5813f76c206ff9706eb686b
 
 # Using message hashes
 ./build/query \
-  --cluster-id=16 
+  --cluster-id=16 \
   --storenode=/dns4/store-01.do-ams3.shards.test.status.im/tcp/30303/p2p/16Uiu2HAmAUdrQ3uwzuE4Gy4D56hX6uLKEeerJAnhKEHZ3DxF1EfT \
-  --hash=0x203f84d1bc5c02020155a0aa018341411a0a099a705004160fb9c2cfdf301e8e \
-  --hash=0x0a4a33435c66cb76c70fccf19d93b50ce6acbb76c95f4006531157ff6eeffa5e \
-  --hash=0x0bd982e0cfb907a897955af0b2f29fa69a84fb42b1d5ce99c014232bc290d4d6
+  --hash=0xacb469e0464aa6ebe7847807bf856c05a7ed3d26c5813f76c206ff9706eb686b \
+  --hash=0x518dd28a733ce491cedf698e4ed375e362fd435603f7d8807dc341303e838f3f
 
-Page: 1, Record from 1 to 3
-MessageHash                                                         Content Topic             Timestamp (unix nano)  Timestamp (UTC)                       
-0x203f84d1bc5c02020155a0aa018341411a0a099a705004160fb9c2cfdf301e8e  /waku/1/0x242ed557/rfc26  0xc00070e6c0           2024-06-05 07:23:00.592406 -0400 AST  
-0x0a4a33435c66cb76c70fccf19d93b50ce6acbb76c95f4006531157ff6eeffa5e  /waku/1/0x242ed557/rfc26  0xc00070e6e0           2024-06-05 07:56:29.179335 -0400 AST  
-0x0bd982e0cfb907a897955af0b2f29fa69a84fb42b1d5ce99c014232bc290d4d6  /waku/1/0x242ed557/rfc26  0xc00070e700           2024-06-05 08:10:53.641212 -0400 AST  
+Page: 1, Record from 1 to 2
+MessageHash                                                         PubsubTopic       Content Topic             Timestamp                                                  
+0xacb469e0464aa6ebe7847807bf856c05a7ed3d26c5813f76c206ff9706eb686b  /waku/2/rs/16/32  /waku/1/0xd811cd50/rfc26  1717586544149237000  2024-06-05 11:22:24.149237 +0000 UTC  
+0x518dd28a733ce491cedf698e4ed375e362fd435603f7d8807dc341303e838f3f  /waku/2/rs/16/32  /waku/1/0x242ed557/rfc26  1717586545164878000  2024-06-05 11:22:25.164878 +0000 UTC 
 
 ```
 
@@ -88,11 +86,11 @@ To see the content of a message
    --storenode=/dns4/store-01.do-ams3.shards.test.status.im/tcp/30303/p2p/16Uiu2HAmAUdrQ3uwzuE4Gy4D56hX6uLKEeerJAnhKEHZ3DxF1EfT \
    --hash 0xacb469e0464aa6ebe7847807bf856c05a7ed3d26c5813f76c206ff9706eb686b
 
-PubsubTopic: 0xc000350830
-MessageHash: 0xacb469e0464aa6ebe7847807bf856c05a7ed3d26c5813f76c206ff9706eb686b
-ContentTopic: /waku/1/0xd811cd50/rfc26
-Timestamp (unix nano): 1717586544149237000
-Timestamp (UTC): 2024-06-05 07:22:24.149237 -0400 AST
+PubsubTopic: /waku/2/rs/16/32
+MessageHash: 0x518dd28a733ce491cedf698e4ed375e362fd435603f7d8807dc341303e838f3f
+ContentTopic: /waku/1/0x242ed557/rfc26
+Timestamp: 2024-06-05 11:22:25.164878 +0000 UTC
+Timestamp (unix nano): 1717586545164878000
 Version: 1
 Payload:
 00000000  c4 33 ca 2a 86 20 35 e8  5c 9b 3b aa 1d d4 e1 25  |.3.*. 5.\.;....%|
@@ -106,7 +104,6 @@ Payload:
 00000080  8e 59 9b 51 1f 97 ab 8c  07 fe 3a ff f7 e7 6f fb  |.Y.Q......:...o.|
 00000090  7f d0 aa 56 03 ca 49 eb  ef 08 9a ef ca 12 85 72  |...V..I........r|
 000000a0  b0 47 79 2b 28 50 06 7d  89 69 d8 85 8e 3c 7f cb  |.Gy+(P.}.i...<..|
-
 Meta: <nil>
 RateLimitProof: <nil>
 ```
