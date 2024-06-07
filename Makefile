@@ -1,6 +1,6 @@
 .PHONY: all build
 
-tests:
-	go test ./... -count 1 -v
+all: build
 
-all: tests
+build:
+	go build -o build/query
