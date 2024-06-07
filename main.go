@@ -170,15 +170,15 @@ func FetchMessage(ctx context.Context, opts Options) error {
 
 	msg := result.Messages()[0]
 
-	fmt.Println("PubsubTopic:", msg.PubsubTopic)
+	fmt.Println("PubsubTopic:", msg.GetPubsubTopic())
 	fmt.Println("MessageHash:", msg.WakuMessageHash())
 	fmt.Println("ContentTopic:", msg.Message.ContentTopic)
 	if msg.Message.Timestamp == nil {
+		fmt.Println("Timestamp: <nil>")
 		fmt.Println("Timestamp (unix nano): <nil>")
-		fmt.Println("Timestamp (UTC): <nil>")
 	} else {
+		fmt.Println("Timestamp:", time.Unix(0, msg.Message.GetTimestamp()).UTC())
 		fmt.Println("Timestamp (unix nano):", msg.Message.GetTimestamp())
-		fmt.Println("Timestamp (UTC):", time.Unix(0, msg.Message.GetTimestamp()))
 	}
 
 	if msg.Message.Version == nil {
@@ -189,21 +189,21 @@ func FetchMessage(ctx context.Context, opts Options) error {
 
 	if len(msg.Message.Payload) != 0 {
 		fmt.Println("Payload:")
-		fmt.Println(hex.Dump(msg.Message.Payload))
+		fmt.Print(hex.Dump(msg.Message.Payload))
 	} else {
 		fmt.Println("Payload: <nil>")
 	}
 
 	if len(msg.Message.Meta) != 0 {
 		fmt.Println("Meta:")
-		fmt.Println(hex.Dump(msg.Message.Meta))
+		fmt.Print(hex.Dump(msg.Message.Meta))
 	} else {
 		fmt.Println("Meta: <nil>")
 	}
 
 	if len(msg.Message.RateLimitProof) != 0 {
 		fmt.Println("RateLimitProof:")
-		fmt.Println(hex.Dump(msg.Message.RateLimitProof))
+		fmt.Print(hex.Dump(msg.Message.RateLimitProof))
 	} else {
 		fmt.Println("RateLimitProof: <nil>")
 	}
@@ -294,9 +294,27 @@ func QueryMessages(ctx context.Context, opts Options) error {
 			pageCount++
 			cnt += len(result.Messages())
 
-			tbl := table.New("MessageHash", "Content Topic", "Timestamp (unix nano)", "Timestamp (UTC)")
+			headers := []interface{}{"MessageHash"}
+			if len(hashes) != 0 {
+				headers = append(headers, "PubsubTopic")
+			}
+			headers = append(headers, "Content Topic", "Timestamp", "")
+			tbl := table.New(headers...)
 			for _, msg := range result.Messages() {
-				tbl.AddRow(msg.WakuMessageHash(), msg.Message.ContentTopic, msg.Message.Timestamp, time.Unix(0, msg.Message.GetTimestamp()))
+				unixTime := "<nil>"
+				readableTime := "<nil>"
+				if msg.Message.Timestamp != nil {
+					unixTime = fmt.Sprintf("%d", msg.Message.GetTimestamp())
+					readableTime = time.Unix(0, msg.Message.GetTimestamp()).UTC().String()
+				}
+
+				var cols []interface{} = []interface{}{msg.WakuMessageHash()}
+				if len(hashes) != 0 {
+					cols = append(cols, msg.GetPubsubTopic())
+				}
+				cols = append(cols, msg.Message.ContentTopic, unixTime, readableTime)
+				tbl.AddRow(cols...)
+
 			}
 
 			fmt.Printf("Page: %d, Record from %d to %d\n", pageCount, cnt-len(result.Messages())+1, cnt)
@@ -358,10 +376,16 @@ func QueryMessages(ctx context.Context, opts Options) error {
 			}
 
 			cnt += len(result.GetMessages())
-			tbl := table.New("MessageHash", "Content Topic", "Timestamp (unix nano)", "Timestamp (UTC)")
+			tbl := table.New("MessageHash", "PubsubTopic", "Content Topic", "Timestamp", "")
 			for _, msg := range result.GetMessages() {
 				env := protocol.NewEnvelope(msg, msg.GetTimestamp(), query.PubsubTopic)
-				tbl.AddRow(env.Hash(), env.Message().ContentTopic, env.Message().GetTimestamp(), time.Unix(0, env.Message().GetTimestamp()))
+				unixTime := "<nil>"
+				readableTime := "<nil>"
+				if msg.Timestamp != nil {
+					unixTime = fmt.Sprintf("%d", msg.GetTimestamp())
+					readableTime = time.Unix(0, msg.GetTimestamp()).UTC().String()
+				}
+				tbl.AddRow(env.Hash(), env.PubsubTopic(), env.Message().ContentTopic, unixTime, readableTime)
 			}
 
 			fmt.Printf("Page: %d, Record from %d to %d\n", pageCount, cnt-len(result.GetMessages())+1, cnt)
