@@ -267,11 +267,13 @@ func QueryMessages(ctx context.Context, opts Options) error {
 			}
 		}
 
+		now := time.Now()
 		ctx, cancel := context.WithTimeout(context.Background(), options.QueryTimeout)
 		result, err := wakuNode.Store().Request(ctx, criteria,
 			store.WithPeerAddr(*options.StoreNode),
 			store.WithPaging(false, options.PageSize),
 		)
+		ellapsed := time.Since(now)
 		cancel()
 		if err != nil {
 			return err
@@ -280,7 +282,7 @@ func QueryMessages(ctx context.Context, opts Options) error {
 		pageCount := 0
 
 		if len(result.Messages()) == 0 {
-			fmt.Println("No messages found")
+			fmt.Println("No messages found (%v)", ellapsed)
 			return nil
 		}
 
@@ -317,7 +319,7 @@ func QueryMessages(ctx context.Context, opts Options) error {
 
 			}
 
-			fmt.Printf("Page: %d, Record from %d to %d\n", pageCount, cnt-len(result.Messages())+1, cnt)
+			fmt.Printf("Page: %d, Record from %d to %d (%v)\n", pageCount, cnt-len(result.Messages())+1, cnt, ellapsed)
 
 			tbl.Print()
 
@@ -328,8 +330,10 @@ func QueryMessages(ctx context.Context, opts Options) error {
 			}
 			fmt.Println()
 
+			now = time.Now()
 			ctx, cancel := context.WithTimeout(context.Background(), options.QueryTimeout)
 			err := result.Next(ctx)
+			ellapsed = time.Since(now)
 			cancel()
 			if err != nil {
 				return err
@@ -344,18 +348,20 @@ func QueryMessages(ctx context.Context, opts Options) error {
 			EndTime:       EndTime,
 		}
 
+		now := time.Now()
 		ctx, cancel := context.WithTimeout(context.Background(), options.QueryTimeout)
 		result, err := wakuNode.LegacyStore().Query(ctx, query,
 			legacy_store.WithPeerAddr(*options.StoreNode),
 			legacy_store.WithPaging(false, 20),
 		)
+		ellapsed := time.Since(now)
 		cancel()
 		if err != nil {
 			return err
 		}
 
 		if len(result.Messages) == 0 {
-			fmt.Println("No messages found")
+			fmt.Printf("No messages found (%v)\n", ellapsed)
 			return nil
 		}
 
@@ -364,8 +370,10 @@ func QueryMessages(ctx context.Context, opts Options) error {
 		pageCount := 0
 		for {
 			pageCount++
+			now = time.Now()
 			ctx, cancel := context.WithTimeout(context.Background(), options.QueryTimeout)
 			hasNext, err := result.Next(ctx)
+			ellapsed = time.Since(now)
 			cancel()
 			if err != nil {
 				return err
@@ -388,7 +396,7 @@ func QueryMessages(ctx context.Context, opts Options) error {
 				tbl.AddRow(env.Hash(), env.PubsubTopic(), env.Message().ContentTopic, unixTime, readableTime)
 			}
 
-			fmt.Printf("Page: %d, Record from %d to %d\n", pageCount, cnt-len(result.GetMessages())+1, cnt)
+			fmt.Printf("Page: %d, Record from %d to %d (%v)\n", pageCount, cnt-len(result.GetMessages())+1, cnt, ellapsed)
 
 			tbl.Print()
 
