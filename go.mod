@@ -10,7 +10,7 @@ require (
 	github.com/multiformats/go-multiaddr v0.12.4
 	github.com/rodaine/table v1.2.0
 	github.com/urfave/cli/v2 v2.27.2
-	github.com/waku-org/go-waku v0.8.1-0.20240605190333-d2d2f5672ebd
+	github.com/waku-org/go-waku v0.8.1-0.20240627140201-8d7c2f7bfad0
 	go.uber.org/zap v1.27.0
 )
 

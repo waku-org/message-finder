@@ -188,7 +188,7 @@ func FetchMessage(ctx context.Context, opts Options) error {
 	}
 
 	if len(msg.Message.Payload) != 0 {
-		fmt.Println("Payload:")
+		fmt.Printf("Payload: (%d bytes)\n", len(msg.Message.Payload))
 		fmt.Print(hex.Dump(msg.Message.Payload))
 	} else {
 		fmt.Println("Payload: <nil>")
