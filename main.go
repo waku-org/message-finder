@@ -252,6 +252,7 @@ func QueryMessages(ctx context.Context, opts Options) error {
 	}
 
 	cnt := 0
+
 	if !options.UseLegacy {
 		var criteria store.Criteria
 
@@ -352,7 +353,7 @@ func QueryMessages(ctx context.Context, opts Options) error {
 		ctx, cancel := context.WithTimeout(context.Background(), options.QueryTimeout)
 		result, err := wakuNode.LegacyStore().Query(ctx, query,
 			legacy_store.WithPeerAddr(*options.StoreNode),
-			legacy_store.WithPaging(false, 20),
+			legacy_store.WithPaging(false, options.PageSize),
 		)
 		ellapsed := time.Since(now)
 		cancel()
