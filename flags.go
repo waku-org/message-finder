@@ -61,7 +61,7 @@ var Pagesize = altsrc.NewUint64Flag(&cli.Uint64Flag{
 })
 
 var Forward = altsrc.NewBoolFlag(&cli.BoolFlag{
-	Name:        "Pagination Order",
+	Name:        "forward",
 	Usage:       "Indicates if the entries will be traversed in ascending order (true) or descending order (false)",
 	Destination: &options.Forward,
 	Value:       false,

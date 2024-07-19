@@ -64,6 +64,7 @@ func main() {
 			EndTime,
 			Hashes,
 			Pagesize,
+			Forward,
 			Storenode,
 			UseLegacy,
 			Timeout,
