@@ -37,6 +37,7 @@ type Options struct {
 	Hashes        cli.StringSlice
 	AdvanceCursor bool
 	PageSize      uint64
+	Forward       bool
 	StoreNode     *multiaddr.Multiaddr
 	UseLegacy     bool
 	QueryTimeout  time.Duration
@@ -154,7 +155,7 @@ func FetchMessage(ctx context.Context, opts Options) error {
 	ctx, cancel := context.WithTimeout(context.Background(), options.QueryTimeout)
 	result, err := wakuNode.Store().Request(ctx, store.MessageHashCriteria{MessageHashes: []pb.MessageHash{pb.ToMessageHash(h)}},
 		store.WithPeerAddr(*options.StoreNode),
-		store.WithPaging(false, options.PageSize),
+		store.WithPaging(options.Forward, options.PageSize),
 	)
 	cancel()
 	if err != nil {
@@ -283,7 +284,7 @@ func QueryMessages(ctx context.Context, opts Options) error {
 		pageCount := 0
 
 		if len(result.Messages()) == 0 {
-			fmt.Println("No messages found (%v)", ellapsed)
+			fmt.Printf("No messages found (%v)\n", ellapsed)
 			return nil
 		}
 
