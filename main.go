@@ -3,6 +3,8 @@ package main
 import (
 	"context"
 	"crypto/ecdsa"
+	"crypto/rand"
+	"crypto/sha256"
 	"encoding/hex"
 	"errors"
 	"fmt"
@@ -18,6 +20,7 @@ import (
 	cli "github.com/urfave/cli/v2"
 	"github.com/waku-org/go-waku/logging"
 	"github.com/waku-org/go-waku/waku/v2/node"
+	"github.com/waku-org/go-waku/waku/v2/payload"
 	"github.com/waku-org/go-waku/waku/v2/protocol"
 	"github.com/waku-org/go-waku/waku/v2/protocol/legacy_store"
 	"github.com/waku-org/go-waku/waku/v2/protocol/pb"
@@ -25,6 +28,7 @@ import (
 	"github.com/waku-org/go-waku/waku/v2/utils"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"golang.org/x/crypto/pbkdf2"
 )
 
 type Options struct {
@@ -213,6 +217,25 @@ func FetchMessage(ctx context.Context, opts Options) error {
 
 }
 
+func decodePayload(message *pb.WakuMessage) {
+	chatId := "0x02b5bdaf5a25fcfe2ee14c501fab1836b8de57f61621080c3d52073d16de0d98d61b1e71d6-1181-4473-ab8f-e0a090f3db15"
+	aesKeyLength := 32
+	symKey := pbkdf2.Key([]byte(chatId), nil, 65356, aesKeyLength, sha256.New)
+
+	keyInfo := new(payload.KeyInfo)
+	keyInfo.Kind = payload.Symmetric
+	keyInfo.SymKey = symKey
+
+	raw, err := payload.DecodePayload(message, keyInfo)
+	if err != nil {
+		fmt.Println("Error when trying to decode a message")
+	}
+
+	fmt.Println("----------------")
+	fmt.Println(string(raw.Data))
+	fmt.Println("================")
+}
+
 func QueryMessages(ctx context.Context, opts Options) error {
 	wakuNode, err := initializeWaku(opts)
 	if err != nil {
@@ -255,6 +278,11 @@ func QueryMessages(ctx context.Context, opts Options) error {
 
 	cnt := 0
 
+	reqId := make([]byte, 4)
+	rand.Read(reqId)
+
+	fmt.Println("Request ID: ", hex.EncodeToString(reqId))
+
 	if !options.UseLegacy {
 		var criteria store.Criteria
 
@@ -273,8 +301,10 @@ func QueryMessages(ctx context.Context, opts Options) error {
 		now := time.Now()
 		ctx, cancel := context.WithTimeout(context.Background(), options.QueryTimeout)
 		result, err := wakuNode.Store().Request(ctx, criteria,
+			store.IncludeData(true),
 			store.WithPeerAddr(*options.StoreNode),
-			store.WithPaging(false, options.PageSize),
+			store.WithPaging(true, options.PageSize),
+			store.WithRequestID(reqId),
 		)
 		ellapsed := time.Since(now)
 		cancel()
@@ -306,6 +336,9 @@ func QueryMessages(ctx context.Context, opts Options) error {
 			headers = append(headers, "Content Topic", "Timestamp", "")
 			tbl := table.New(headers...)
 			for _, msg := range result.Messages() {
+				decodePayload(msg.Message)
+				// fmt.Printf("msg payload (%s)\n", msg.Message.Payload)
+
 				unixTime := "<nil>"
 				readableTime := "<nil>"
 				if msg.Message.Timestamp != nil {
@@ -322,7 +355,12 @@ func QueryMessages(ctx context.Context, opts Options) error {
 
 			}
 
-			fmt.Printf("Page: %d, Record from %d to %d (%v)\n", pageCount, cnt-len(result.Messages())+1, cnt, ellapsed)
+			fmt.Printf("Page: %d, Record from %d to %d (%v) [%s]\n",
+				pageCount,
+				cnt-len(result.Messages())+1,
+				cnt,
+				ellapsed,
+				hex.EncodeToString(reqId))
 
 			tbl.Print()
 
@@ -401,7 +439,7 @@ func QueryMessages(ctx context.Context, opts Options) error {
 
 			fmt.Printf("Page: %d, Record from %d to %d (%v)\n", pageCount, cnt-len(result.GetMessages())+1, cnt, ellapsed)
 
-			tbl.Print()
+			// tbl.Print()
 
 			fmt.Println()
 
